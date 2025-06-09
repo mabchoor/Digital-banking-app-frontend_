@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, forkJoin, map, catchError, throwError } from 'rxjs';
 import {
   BankAccountDTO,
   AccountStatus,
@@ -8,6 +8,7 @@ import {
 } from '../models/account.model';
 import { CustomerDTO } from '../models/customer.model';
 import { AccountOperationDTO } from '../models/operation.model';
+import { environment } from '../../../environments/environment';
 
 export interface DashboardStats {
   totalCustomers: number;
@@ -45,7 +46,7 @@ export interface ChartData {
   providedIn: 'root',
 })
 export class DashboardService {
-  private readonly API_URL = '/api';
+  private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -58,19 +59,38 @@ export class DashboardService {
     console.log('DashboardService: API URLs:', {
       customers: `${this.API_URL}/customers`,
       accounts: `${this.API_URL}/accounts`,
+      baseUrl: this.API_URL,
     });
 
+    // Test backend connectivity first
+    console.log('DashboardService: Testing backend connectivity...');
+
     return forkJoin({
-      customers: this.http.get<CustomerDTO[]>(`${this.API_URL}/customers`),
-      accounts: this.http.get<BankAccountDTO[]>(`${this.API_URL}/accounts`),
+      customers: this.http.get<CustomerDTO[]>(`${this.API_URL}/customers`).pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('DashboardService: Error fetching customers:', error);
+          return throwError(() => error);
+        })
+      ),
+      accounts: this.http
+        .get<BankAccountDTO[]>(`${this.API_URL}/accounts`)
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            console.error('DashboardService: Error fetching accounts:', error);
+            return throwError(() => error);
+          })
+        ),
     }).pipe(
       map(({ customers, accounts }) => {
-        console.log('DashboardService: Received data from backend:', {
-          customersCount: customers.length,
-          accountsCount: accounts.length,
-          customers: customers.slice(0, 3), // Show first 3 for debugging
-          accounts: accounts.slice(0, 3), // Show first 3 for debugging
-        });
+        console.log(
+          'DashboardService: Successfully received data from backend:',
+          {
+            customersCount: customers.length,
+            accountsCount: accounts.length,
+            customers: customers.slice(0, 3), // Show first 3 for debugging
+            accounts: accounts.slice(0, 3), // Show first 3 for debugging
+          }
+        );
 
         const stats = this.calculateStats(customers, accounts);
         const recentActivity = this.getRecentActivity(customers, accounts);
@@ -78,6 +98,19 @@ export class DashboardService {
 
         console.log('DashboardService: Calculated stats:', stats);
         return { stats, recentActivity, chartData };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error(
+          'DashboardService: Failed to load dashboard data:',
+          error
+        );
+        console.error('DashboardService: Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message,
+        });
+        return throwError(() => error);
       })
     );
   }

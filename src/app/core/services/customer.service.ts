@@ -7,12 +7,13 @@ import {
   CreateCustomerRequest,
   UpdateCustomerRequest,
 } from '../models/customer.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerService {
-  private readonly API_URL = '/api';
+  private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

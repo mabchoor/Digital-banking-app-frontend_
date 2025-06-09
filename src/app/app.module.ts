@@ -13,13 +13,6 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    RegisterComponent,
-    HomeComponent,
-    NotFoundComponent,
-  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -27,8 +20,12 @@ import { SharedModule } from './shared/shared.module';
     ReactiveFormsModule,
     RouterModule,
     SharedModule,
+    AppComponent,
+    LoginComponent,
+    RegisterComponent,
+    HomeComponent,
+    NotFoundComponent,
   ],
   providers: [],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

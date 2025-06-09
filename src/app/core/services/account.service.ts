@@ -8,6 +8,7 @@ import {
   DebitRequest,
   TransferRequest,
 } from '../models/operation.model';
+import { environment } from '../../../environments/environment';
 
 export interface CreateCurrentAccountRequest {
   customerId: number;
@@ -25,7 +26,7 @@ export interface CreateSavingAccountRequest {
   providedIn: 'root',
 })
 export class AccountService {
-  private readonly API_URL = '/api';
+  private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

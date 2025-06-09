@@ -1,1 +1,18 @@
 /* Header component styles */
+
+:host {
+  display: block; /* Ensures the host element behaves like a block */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: white; /* Ensure header has a background */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  height: 64px; /* Explicitly set height for the host element */
+}
+
+/* The following rule is no longer needed as :host handles header styling */
+/* .header-container nav { */
+/*   height: 64px; */
+/* } */

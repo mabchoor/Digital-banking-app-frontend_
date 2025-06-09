@@ -1,4 +1,12 @@
-<div class="page-wrapper">
+<div class="container-fluid">
+  <div class="dashboard-content">
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-overlay">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="!loading" class="dashboard-grid">
   <!-- Page Header -->
   <div class="page-header">
     <div class="row">
@@ -8,43 +16,41 @@
             <h1 class="h2 mb-0">Dashboard</h1>
             <p class="text-muted">Welcome to Digital Banking Management System</p>
           </div>
-          <button class="btn btn-outline-primary" (click)="refreshData()" [disabled]="loading">
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="testBackendConnection()">
+                  <i class="bi bi-wifi me-1"></i>Test API
+                </button>
+                <button type="button" class="btn btn-outline-primary" (click)="refreshData()" [disabled]="loading">
             <i class="bi bi-arrow-clockwise me-2"></i>Refresh
           </button>
+              </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Loading Spinner -->
-  <ng-container *ngIf="loading">
-    <app-loading-spinner message="Loading dashboard..."></app-loading-spinner>
-  </ng-container>
-
-  <!-- Dashboard Content -->
-  <ng-container *ngIf="!loading">
-    <!-- Statistics Cards Row -->
-    <div class="row mb-4">
+      <!-- Statistics Cards Row - Desktop Layout -->
+      <div class="row g-3 mb-4">
       <!-- Balance Card -->
-      <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
-        <div class="card bento-card gradient-primary h-100">
-          <div class="card-body d-flex flex-column justify-content-center">
-            <div class="text-center text-white">
-              <div class="bento-icon-large mx-auto mb-3">
-                <i class="bi bi-wallet2"></i>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-12">
+          <div class="card bento-card gradient-primary h-100">
+        <div class="card-body d-flex flex-column justify-content-center">
+          <div class="text-center text-white">
+            <div class="bento-icon-large mx-auto mb-3">
+              <i class="bi bi-wallet2"></i>
+            </div>
+            <h6 class="mb-1 opacity-75">Total Balance</h6>
+            <h2 class="mb-3 fw-bold">${{ stats.totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) }}
+            </h2>
+            <div class="d-flex justify-content-around balance-stats">
+              <div>
+                <div class="opacity-75 small">Active</div>
+                <div class="h6 mb-0">{{ stats.activeAccounts }}</div>
               </div>
-              <h6 class="mb-1 opacity-75">Total Balance</h6>
-              <h2 class="mb-3 fw-bold">${{ stats.totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) }}
-              </h2>
-              <div class="row balance-stats">
-                <div class="col-6">
-                  <div class="opacity-75 small">Active</div>
-                  <div class="h6 mb-0">{{ stats.activeAccounts }}</div>
-                </div>
-                <div class="col-6">
-                  <div class="opacity-75 small">Total</div>
-                  <div class="h6 mb-0">{{ stats.totalAccounts }}</div>
-                </div>
+              <div>
+                <div class="opacity-75 small">Total</div>
+                <div class="h6 mb-0">{{ stats.totalAccounts }}</div>
+                  </div>
               </div>
             </div>
           </div>
@@ -52,107 +58,95 @@
       </div>
 
       <!-- Customers Card -->
-      <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
-        <div class="card bento-card h-100">
-          <div class="card-body d-flex flex-column justify-content-center text-center">
-            <div class="bento-icon-medium bg-success mb-2 mx-auto">
-              <i class="bi bi-people text-white"></i>
-            </div>
-            <h2 class="display-6 fw-bold text-success mb-1">{{ stats.totalCustomers }}</h2>
-            <p class="text-muted mb-0 small">Total Customers</p>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-12">
+          <div class="card bento-card h-100">
+        <div class="card-body d-flex flex-column justify-content-center text-center">
+          <div class="bento-icon-medium bg-success mb-2 mx-auto">
+            <i class="bi bi-people text-white"></i>
           </div>
+          <h2 class="display-6 fw-bold text-success mb-1">{{ stats.totalCustomers }}</h2>
+          <p class="text-muted mb-0 small">Total Customers</p>
+            </div>
         </div>
       </div>
 
       <!-- Current Accounts Card -->
-      <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
-        <div class="card bento-card h-100">
-          <div class="card-body d-flex flex-column justify-content-center">
-            <div class="text-center">
-              <div class="bento-icon-small bg-info mx-auto mb-2">
-                <i class="bi bi-credit-card text-white"></i>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-12">
+          <div class="card bento-card h-100">
+            <div class="card-body d-flex flex-column justify-content-center text-center">
+              <div class="bento-icon-medium bg-info mb-2 mx-auto">
+              <i class="bi bi-credit-card text-white"></i>
               </div>
-              <h4 class="mb-0 text-info">{{ stats.currentAccounts }}</h4>
-              <small class="text-muted">Current Accounts</small>
-            </div>
+              <h2 class="display-6 fw-bold text-info mb-1">{{ stats.currentAccounts }}</h2>
+              <p class="text-muted mb-0 small">Current Accounts</p>
           </div>
         </div>
       </div>
 
       <!-- Saving Accounts Card -->
-      <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
-        <div class="card bento-card h-100">
-          <div class="card-body d-flex flex-column justify-content-center">
-            <div class="text-center">
-              <div class="bento-icon-small bg-warning mx-auto mb-2">
-                <i class="bi bi-piggy-bank text-white"></i>
+        <div class="col-xl-3 col-lg-3 col-md-6 col-12">
+          <div class="card bento-card h-100">
+            <div class="card-body d-flex flex-column justify-content-center text-center">
+              <div class="bento-icon-medium bg-warning mb-2 mx-auto">
+              <i class="bi bi-piggy-bank text-white"></i>
               </div>
-              <h4 class="mb-0 text-warning">{{ stats.savingAccounts }}</h4>
-              <small class="text-muted">Saving Accounts</small>
-            </div>
+              <h2 class="display-6 fw-bold text-warning mb-1">{{ stats.savingAccounts }}</h2>
+              <p class="text-muted mb-0 small">Saving Accounts</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Charts Row -->
-    <div class="row mb-4">
+      <!-- Charts Section - Grid Layout -->
+      <div class="row g-3 mb-4">
       <!-- Account Status Chart -->
-      <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="col-xl-4 col-lg-6 col-md-12">
         <div class="card h-100">
           <div class="card-header">
-            <h6 class="mb-0">
-              <i class="bi bi-pie-chart me-2"></i>Account Status Distribution
-            </h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas baseChart [data]="accountStatusChartData" [options]="doughnutChartOptions" type="doughnut">
-              </canvas>
+              <h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Status</h6>
+            </div>
+            <div class="card-body p-2">
+              <div class="chart-container-small">
+                <canvas baseChart [data]="accountStatusChartData" [options]="doughnutChartOptions"
+                  type="doughnut"></canvas>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Account Type Chart -->
-      <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="col-xl-4 col-lg-6 col-md-12">
         <div class="card h-100">
           <div class="card-header">
-            <h6 class="mb-0">
-              <i class="bi bi-bank me-2"></i>Account Types
-            </h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas baseChart [data]="accountTypeChartData" [options]="pieChartOptions" type="pie">
-              </canvas>
+              <h6 class="mb-0"><i class="bi bi-bank me-2"></i>Types</h6>
+            </div>
+            <div class="card-body p-2">
+              <div class="chart-container-small">
+                <canvas baseChart [data]="accountTypeChartData" [options]="pieChartOptions" type="pie"></canvas>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Balance Range Chart -->
-      <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="col-xl-4 col-lg-12 col-md-12">
         <div class="card h-100">
           <div class="card-header">
-            <h6 class="mb-0">
-              <i class="bi bi-bar-chart me-2"></i>Balance Distribution
-            </h6>
-          </div>
-          <div class="card-body">
-            <div style="height: 300px;">
-              <canvas baseChart [data]="balanceRangeChartData" [options]="barChartOptions" type="bar">
-              </canvas>
+              <h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Balance Distribution</h6>
+            </div>
+            <div class="card-body p-2">
+              <div class="chart-container-medium">
+                <canvas baseChart [data]="balanceRangeChartData" [options]="barChartOptions" type="bar"></canvas>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Trends Row -->
-    <div class="row mb-4">
+      <!-- Trends Section - Grid Layout -->
+      <div class="row g-3 mb-4">
       <!-- Monthly Trends Chart -->
-      <div class="col-xl-8 col-lg-12 mb-4">
+        <div class="col-xl-8 col-lg-12 col-md-12">
         <div class="card h-100">
           <div class="card-header">
             <h6 class="mb-0">
@@ -160,7 +154,7 @@
             </h6>
           </div>
           <div class="card-body">
-            <div style="height: 350px;">
+              <div class="chart-container-large">
               <canvas baseChart [data]="monthlyTrendsChartData" [options]="lineChartOptions" type="line">
               </canvas>
             </div>
@@ -169,7 +163,7 @@
       </div>
 
       <!-- Balance Trends Chart -->
-      <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="col-xl-4 col-lg-12 col-md-12">
         <div class="card h-100">
           <div class="card-header">
             <h6 class="mb-0">
@@ -177,7 +171,7 @@
             </h6>
           </div>
           <div class="card-body">
-            <div style="height: 350px;">
+              <div class="chart-container-large">
               <canvas baseChart [data]="balanceTrendsChartData" [options]="balanceLineChartOptions" type="line">
               </canvas>
             </div>
@@ -186,10 +180,10 @@
       </div>
     </div>
 
-    <!-- Performance Metrics Row -->
-    <div class="row mb-4">
+      <!-- Performance Metrics Section - Grid Layout -->
+      <div class="row g-3 mb-4">
       <!-- Key Performance Indicators -->
-      <div class="col-xl-8 col-lg-12 mb-4">
+        <div class="col-xl-8 col-lg-8 col-md-12">
         <div class="card h-100">
           <div class="card-header">
             <h6 class="mb-0">
@@ -197,28 +191,29 @@
             </h6>
           </div>
           <div class="card-body">
-            <div class="row">
+              <div class="row text-center">
               <div class="col-md-3 col-6 mb-3">
-                <div class="text-center">
+                  <div>
                   <div class="h4 text-success mb-1">{{ ((stats.activeAccounts / stats.totalAccounts) * 100).toFixed(1)
                     }}%</div>
                   <small class="text-muted">Account Activation Rate</small>
                 </div>
               </div>
               <div class="col-md-3 col-6 mb-3">
-                <div class="text-center">
+                  <div>
                   <div class="h4 text-info mb-1">${{ (stats.totalBalance / stats.totalAccounts).toFixed(0) }}</div>
                   <small class="text-muted">Average Balance</small>
                 </div>
               </div>
               <div class="col-md-3 col-6 mb-3">
-                <div class="text-center">
-                  <div class="h4 text-warning mb-1">{{ (stats.totalAccounts / stats.totalCustomers).toFixed(1) }}</div>
+                  <div>
+                    <div class="h4 text-warning mb-1">{{ (stats.totalAccounts / stats.totalCustomers).toFixed(1) }}
+                    </div>
                   <small class="text-muted">Accounts per Customer</small>
                 </div>
               </div>
               <div class="col-md-3 col-6 mb-3">
-                <div class="text-center">
+                  <div>
                   <div class="h4 text-primary mb-1">{{ ((stats.savingAccounts / stats.totalAccounts) * 100).toFixed(1)
                     }}%</div>
                   <small class="text-muted">Savings Account Ratio</small>
@@ -230,7 +225,7 @@
       </div>
 
       <!-- Risk Assessment -->
-      <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-12">
         <div class="card h-100">
           <div class="card-header">
             <h6 class="mb-0">
@@ -243,10 +238,9 @@
                 <small>Suspended Accounts</small>
                 <small>{{ ((stats.suspendedAccounts / stats.totalAccounts) * 100).toFixed(1) }}%</small>
               </div>
-              <div class="progress" style="height: 8px;">
+                <div class="progress">
                 <div class="progress-bar bg-warning"
-                  [style.width.%]="(stats.suspendedAccounts / stats.totalAccounts) * 100">
-                </div>
+                    [style.width.%]="(stats.suspendedAccounts / stats.totalAccounts) * 100"></div>
               </div>
             </div>
             <div class="mb-3">
@@ -254,122 +248,102 @@
                 <small>Closed Accounts</small>
                 <small>{{ ((stats.closedAccounts / stats.totalAccounts) * 100).toFixed(1) }}%</small>
               </div>
-              <div class="progress" style="height: 8px;">
+                <div class="progress">
                 <div class="progress-bar bg-danger"
-                  [style.width.%]="(stats.closedAccounts / stats.totalAccounts) * 100">
+                    [style.width.%]="(stats.closedAccounts / stats.totalAccounts) * 100"></div>
                 </div>
               </div>
-            </div>
-            <div class="alert alert-info py-2 mb-0">
-              <small>
-                <i class="bi bi-info-circle me-1"></i>
-                {{ stats.suspendedAccounts + stats.closedAccounts }} accounts need attention
-              </small>
+              <div class="d-flex justify-content-between mb-1">
+                <small>Overall Account Health</small>
+                <small>{{ (((stats.activeAccounts + stats.createdAccounts) / stats.totalAccounts) * 100).toFixed(1)
+                  }}%</small>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-success"
+                  [style.width.%]="((stats.activeAccounts + stats.createdAccounts) / stats.totalAccounts) * 100"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Action Cards and Recent Data Row -->
-    <div class="row mb-4">
-      <!-- Quick Actions Card -->
-      <div class="col-xl-4 col-lg-6 mb-4">
+      <!-- Recent Activity Section -->
+      <div class="row g-3 mb-4">
+        <!-- Recent Customers -->
+        <div class="col-xl-4 col-lg-6 col-md-12">
         <div class="card h-100">
-          <div class="card-body">
-            <h6 class="mb-3">
-              <i class="bi bi-lightning me-2"></i>Quick Actions
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="bi bi-person-plus me-2"></i>Recent Customers
             </h6>
-            <div class="row g-2">
-              <div class="col-6">
-                <a routerLink="/customers/new" class="btn btn-outline-primary btn-sm w-100 quick-action-mini">
-                  <i class="bi bi-person-plus"></i>
-                  <div class="small">Add Customer</div>
-                </a>
               </div>
-              <div class="col-6">
-                <a routerLink="/accounts/new" class="btn btn-outline-success btn-sm w-100 quick-action-mini">
-                  <i class="bi bi-bank"></i>
-                  <div class="small">New Account</div>
-                </a>
+            <div class="card-body recent-list">
+              <div *ngIf="recentActivity.recentCustomers.length === 0" class="text-center text-muted">
+                No recent customers.
               </div>
-              <div class="col-6">
-                <a routerLink="/customers" class="btn btn-outline-info btn-sm w-100 quick-action-mini">
-                  <i class="bi bi-people"></i>
-                  <div class="small">Customers</div>
-                </a>
-              </div>
-              <div class="col-6">
-                <a routerLink="/accounts" class="btn btn-outline-warning btn-sm w-100 quick-action-mini">
-                  <i class="bi bi-bank2"></i>
-                  <div class="small">Accounts</div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Customers Card -->
-      <div class="col-xl-4 col-lg-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h6 class="mb-3">
-              <i class="bi bi-clock-history me-2"></i>Recent Customers
-            </h6>
-            <div class="recent-list">
-              <div *ngFor="let customer of recentActivity.recentCustomers.slice(0, 4)"
-                class="d-flex align-items-center mb-2 recent-item">
-                <div class="avatar bg-primary text-white me-2">
-                  {{ customer.name.charAt(0).toUpperCase() }}
-                </div>
-                <div class="flex-grow-1">
-                  <div class="fw-medium small">{{ customer.name }}</div>
+              <div *ngFor="let customer of recentActivity.recentCustomers"
+                class="recent-item d-flex align-items-center mb-2">
+                <i class="bi bi-person-circle fs-4 me-3 text-primary"></i>
+                <div>
+                  <h6 class="mb-0">{{ customer.name }}</h6>
                   <small class="text-muted">{{ customer.email }}</small>
-                </div>
-                <a [routerLink]="['/customers', customer.id]" class="btn btn-sm btn-outline-primary">
-                  <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
-              <div *ngIf="recentActivity.recentCustomers.length === 0" class="text-center text-muted py-3">
-                <i class="bi bi-inbox"></i>
-                <div class="small">No recent customers</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Accounts Card -->
-      <div class="col-xl-4 col-lg-12 mb-4">
+        <!-- Recent Accounts -->
+        <div class="col-xl-4 col-lg-6 col-md-12">
         <div class="card h-100">
-          <div class="card-body d-flex flex-column">
-            <h6 class="mb-3">
-              <i class="bi bi-clock-history me-2"></i>Recent Accounts
-            </h6>
-            <div class="recent-list">
-              <div *ngFor="let account of recentActivity.recentAccounts.slice(0, 4)"
-                class="d-flex align-items-center mb-2 recent-item">
-                <div class="me-2">
-                  <i
-                    [class]="'bi ' + getAccountTypeIcon(account.type) + ' text-' + (account.type === 'CURRENT_ACCOUNT' ? 'info' : 'warning')"></i>
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-credit-card me-2"></i>Recent Accounts</h6>
+            </div>
+            <div class="card-body recent-list">
+              <div *ngIf="recentActivity.recentAccounts.length === 0" class="text-center text-muted">
+                No recent accounts.
                 </div>
-                <div class="flex-grow-1">
-                  <div class="fw-medium small">${{ account.balance.toFixed(2) }}</div>
-                  <small class="text-muted">{{ getAccountTypeName(account.type) }}</small>
-                </div>
-                <span [class]="'badge ' + getStatusBadgeClass(account.status)" class="badge-small">
-                  {{ account.status }}
-                </span>
+              <div *ngFor="let account of recentActivity.recentAccounts"
+                class="recent-item d-flex align-items-center mb-2">
+                <i class="bi bi-{{ getAccountTypeIcon(account.type) }} fs-4 me-3 text-info"></i>
+                <div>
+                  <h6 class="mb-0">{{ getAccountTypeName(account.type) }} ({{ account.id }})</h6>
+                  <small class="text-muted d-flex align-items-center">
+                    Balance: ${{ account.balance.toLocaleString('en-US', {minimumFractionDigits: 2}) }}
+                    <span class="badge {{ getStatusBadgeClass(account.status) }} ms-2">{{ account.status }}</span>
+                  </small>
               </div>
-              <div *ngIf="recentActivity.recentAccounts.length === 0" class="text-center text-muted py-3">
-                <i class="bi bi-inbox"></i>
-                <div class="small">No recent accounts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- Recent Operations -->
+        <div class="col-xl-4 col-lg-12 col-md-12">
+        <div class="card h-100">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="bi bi-receipt me-2"></i>Recent Operations
+            </h6>
+            </div>
+            <div class="card-body recent-list">
+              <div *ngIf="recentActivity.recentOperations.length === 0" class="text-center text-muted">
+                No recent operations.
+              </div>
+              <div *ngFor="let operation of recentActivity.recentOperations"
+                class="recent-item d-flex align-items-center mb-2">
+                <i
+                  class="bi bi-arrow-{{ operation.type === 'DEBIT' ? 'down' : 'up' }}-circle fs-4 me-3 {{ operation.type === 'DEBIT' ? 'operation-debit' : 'operation-credit' }}"></i>
+                <div>
+                  <h6 class="mb-0">{{ operation.type | titlecase }} of ${{ operation.amount.toLocaleString('en-US',
+                    {minimumFractionDigits: 2}) }}</h6>
+                  <small class="text-muted">{{ operation.operationDate | date:'medium' }}</small>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </ng-container>
+  </div>
 </div>

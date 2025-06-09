@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService, LoginRequest } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   error: string = '';
   loading: boolean = false;
@@ -27,21 +27,34 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      username: ['admin', [Validators.required]], // Pre-fill for testing
-      password: ['admin123', [Validators.required]], // Pre-fill for testing
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
+  ngOnInit(): void {
+    // Check if user is already logged in
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
   onSubmit(): void {
-    console.log('Login form submitted');
     if (this.loginForm.valid) {
       this.loading = true;
       this.error = '';
 
-      const { username, password } = this.loginForm.value;
-      console.log('Attempting login with:', { username, password: '***' });
+      const loginData: LoginRequest = {
+        username: this.loginForm.get('username')?.value,
+        password: this.loginForm.get('password')?.value,
+      };
 
-      this.authService.login({ username, password }).subscribe({
+      console.log('Attempting login with:', {
+        username: loginData.username,
+        password: '***',
+      });
+
+      this.authService.login(loginData).subscribe({
         next: (response) => {
           console.log('Login successful:', response);
           this.loading = false;
@@ -49,10 +62,7 @@ export class LoginComponent {
         },
         error: (err) => {
           console.error('Login error:', err);
-          this.error =
-            err.error?.message ||
-            err.message ||
-            'An error occurred during login';
+          this.error = err.message || 'An error occurred during login';
           this.loading = false;
         },
       });

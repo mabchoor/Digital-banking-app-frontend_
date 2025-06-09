@@ -5,8 +5,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
-  declarations: [HeaderComponent, FooterComponent],
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent],
   exports: [HeaderComponent, FooterComponent],
 })
 export class SharedModule {}

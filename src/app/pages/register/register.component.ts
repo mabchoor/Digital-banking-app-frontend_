@@ -28,7 +28,7 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group(
       {
-        username: ['', [Validators.required]],
+        username: ['', [Validators.required, Validators.minLength(3)]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
       },
@@ -52,22 +52,46 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    console.log('Register form submitted');
     if (this.registerForm.valid) {
       this.loading = true;
       this.error = '';
 
-      const { username, password } = this.registerForm.value;
+      const registerData = {
+        username: this.registerForm.get('username')?.value,
+        password: this.registerForm.get('password')?.value,
+      };
 
-      this.authService.register({ username, password }).subscribe({
-        next: () => {
+      console.log('Attempting registration with:', {
+        username: registerData.username,
+        password: '***',
+      });
+
+      this.authService.register(registerData).subscribe({
+        next: (response) => {
+          console.log('Registration successful:', response);
+          this.loading = false;
           this.router.navigate(['/login']);
         },
         error: (err) => {
+          console.error('Registration error:', err);
           this.error =
-            err.error.message || 'An error occurred during registration';
+            err.error?.message ||
+            err.message ||
+            'An error occurred during registration';
           this.loading = false;
         },
       });
+    } else {
+      console.log('Form is invalid:', this.registerForm.errors);
+      this.markFormGroupTouched();
     }
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.registerForm.controls).forEach((key) => {
+      const control = this.registerForm.get(key);
+      control?.markAsTouched();
+    });
   }
 }

@@ -8,6 +8,7 @@ import {
   ChartData as DashboardChartData,
 } from '../../core/services/dashboard.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { BackendTestService } from '../../core/services/backend-test.service';
 import { BankAccountDTO, AccountStatus } from '../../core/models/account.model';
 import { CustomerDTO } from '../../core/models/customer.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -211,9 +212,12 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private backendTestService: BackendTestService
   ) {}
   ngOnInit(): void {
+    // Log environment info for debugging
+    this.backendTestService.logEnvironmentInfo();
     this.loadDashboardData();
   }
 
@@ -368,5 +372,31 @@ export class DashboardComponent implements OnInit {
 
   refreshData(): void {
     this.loadDashboardData();
+  }
+
+  testBackendConnection(): void {
+    console.log('🔍 Testing backend connection...');
+    this.backendTestService.testBackendConnectivity().subscribe({
+      next: (response) => {
+        console.log('✅ Backend connection successful:', response);
+        this.notificationService.showSuccess(
+          'Success',
+          'Backend connection is working!'
+        );
+      },
+      error: (error) => {
+        console.error('❌ Backend connection failed:', error);
+        let errorMessage = 'Backend connection failed';
+        if (error.status === 0) {
+          errorMessage =
+            'Cannot reach backend server. Please check if Spring Boot is running on http://localhost:8080';
+        } else if (error.status === 401) {
+          errorMessage = 'Authentication required. Please login first.';
+        } else if (error.status === 403) {
+          errorMessage = 'Access denied. Check your permissions.';
+        }
+        this.notificationService.showError('Connection Failed', errorMessage);
+      },
+    });
   }
 }
